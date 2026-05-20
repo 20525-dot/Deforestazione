@@ -1049,6 +1049,186 @@
     font-style: italic;
   }
 
+  /* ===== LIVE COUNTER ===== */
+  .live-counter-wrapper {
+    margin-top: 3rem;
+    text-align: center;
+    animation: fadeInUp 1.2s ease 1.2s both;
+  }
+  .live-counter-label {
+    font-size: 0.95rem;
+    color: #a0c4ad;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .live-counter-num {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    color: #e63946;
+    text-shadow: 0 0 60px rgba(230,57,70,0.5);
+    line-height: 1;
+    letter-spacing: -2px;
+    transition: color 0.1s;
+  }
+  .live-counter-sub {
+    font-size: 0.85rem;
+    color: #6b8f74;
+    margin-top: 0.5rem;
+  }
+
+  /* ===== WORLD MAP SECTION ===== */
+  .map-section {
+    padding: 8rem 0;
+    background: linear-gradient(180deg, #0d1b0f 0%, #091508 50%, #0d1b0f 100%);
+  }
+  .worldmap-wrapper {
+    position: relative;
+    margin: 3rem 0 2rem;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(82,183,136,0.2);
+    background: #091508;
+  }
+  .world-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .hotspot {
+    cursor: pointer;
+    transition: fill 0.3s ease, filter 0.3s ease;
+  }
+  .hotspot:hover, .hotspot.active {
+    fill: #52b788;
+    filter: drop-shadow(0 0 12px rgba(82,183,136,0.7));
+  }
+  .map-tooltip {
+    position: absolute;
+    background: rgba(10,26,18,0.95);
+    border: 1px solid #52b788;
+    border-radius: 12px;
+    padding: 1rem 1.4rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    backdrop-filter: blur(12px);
+    min-width: 220px;
+    z-index: 10;
+  }
+  .map-tooltip.visible {
+    opacity: 1;
+  }
+  .map-tooltip-region {
+    font-size: 0.8rem;
+    color: #52b788;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .map-tooltip-loss {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #e9c46a;
+    line-height: 1;
+  }
+  .map-tooltip-detail {
+    font-size: 0.8rem;
+    color: #a0c4ad;
+    margin-top: 0.4rem;
+    line-height: 1.4;
+  }
+  .map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    justify-content: center;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .map-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .map-legend-item:hover { opacity: 0.8; }
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .legend-region {
+    font-size: 0.88rem;
+    color: #c8e6d0;
+  }
+  .legend-pct {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #e9c46a;
+    margin-left: 0.2rem;
+  }
+  .map-source {
+    text-align: center;
+    font-size: 0.78rem;
+    color: #6b8f74;
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+
+  /* ===== HISTORY SECTION ===== */
+  .history-section {
+    padding: 8rem 0;
+    background: linear-gradient(180deg, #0d1b0f 0%, #0b1a0e 100%);
+  }
+  .history-chart-wrapper {
+    margin: 3rem 0 4rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(82,183,136,0.15);
+    border-radius: 16px;
+    padding: 2rem;
+    height: 420px;
+  }
+  .history-events h3 {
+    font-size: 1.5rem;
+    color: #e9c46a;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+  }
+  .event-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(82,183,136,0.15);
+    border-radius: 12px;
+    padding: 1.2rem;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .event-card:hover {
+    border-color: rgba(82,183,136,0.4);
+    transform: translateY(-3px);
+  }
+  .event-year {
+    display: inline-block;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #e63946;
+    margin-bottom: 0.5rem;
+  }
+  .event-card p {
+    font-size: 0.85rem;
+    color: #a0c4ad;
+    line-height: 1.6;
+  }
+
   /* ===== RESPONSIVE ===== */
   @media (max-width: 900px) {
     .navbar { padding: 1rem 1.5rem; }
@@ -1105,6 +1285,7 @@
     .timeline-item::before {
       left: -2.1rem;
     }
+    .events-grid { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 500px) {
     .navbar { padding: 0.8rem 1rem; }
@@ -1113,6 +1294,8 @@
     .chart-container {
       padding: 1.5rem;
     }
+    .events-grid { grid-template-columns: 1fr; }
+    .history-chart-wrapper { height: 300px; }
   }
 </style>
 </head>
@@ -1132,8 +1315,10 @@
     <li><a href="#hero">Home</a></li>
     <li><a href="#what">Cos'è</a></li>
     <li><a href="#satellite">Satelliti NASA</a></li>
+    <li><a href="#worldmap">Mappa</a></li>
     <li><a href="#causes">Cause</a></li>
     <li><a href="#consequences">Conseguenze</a></li>
+    <li><a href="#history">Storia</a></li>
     <li><a href="#solutions">Soluzioni</a></li>
     <li><a href="#conclusions">Conclusioni</a></li>
   </ul>
@@ -1150,7 +1335,7 @@
     <div class="stat-grid">
       <div class="stat-card" data-animate>
         <span class="stat-number" data-counter="15" data-suffix=" MLD">0</span>
-        <span class="stat-label">Alberi abbattuti / </span>
+        <span class="stat-label">Alberi abbattuti / anno</span>
       </div>
       <div class="stat-card" data-animate>
         <span class="stat-number" data-counter="46" data-suffix="%">0</span>
@@ -1162,9 +1347,15 @@
       </div>
     </div>
 
+    <div class="live-counter-wrapper">
+      <p class="live-counter-label">Alberi abbattuti da quando hai aperto questa pagina</p>
+      <div class="live-counter-num" id="liveTreeCounter">0</div>
+      <p class="live-counter-sub">&asymp; 475 alberi ogni secondo &middot; 15 miliardi all'anno</p>
+    </div>
+
     <div class="hero-group">
-      <strong>Alessandro Zavarise</strong> &middot; <strong>Ersi Arapaj</strong> &middot; <strong>Enrico Bozzolin</strong><br />
-      Anno scolastico 2025&ndash;26
+      <strong>Alessandro Zavarise</strong> &middot; <strong>Ersi Arapaji</strong> &middot; <strong>Enrico Bozzolin</strong><br />
+      Anno scolastico 2024&ndash;25
     </div>
   </div>
   <div class="scroll-indicator">Scorri</div>
@@ -1236,40 +1427,40 @@
 
     <!-- BEFORE / AFTER COMPARISON -->
     <div class="sat-compare-title fade-in">
-      <h3>Confronto: prima e dopo — Ucayali, Perù</h3>
-      <p>La stessa area della foresta amazzonica in Perù fotografata da Landsat nel 2017 e nel 2022 — 5 anni bastano per trasformare foresta in campi.</p>
+      <h3>Confronto: 12 anni a confronto — Rondônia, Brasile</h3>
+      <p>La stessa area di Rondônia fotografata da Landsat nel 2011 e nel 2023 — 12 anni di accelerazione della perdita forestale.</p>
     </div>
     <div class="sat-compare-grid fade-in">
       <div class="sat-compare-card">
-        <div class="sat-compare-label before-label">PRIMA · 2017</div>
-        <img src="https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/imagerecords/150000/150513/nuevaitalia_oli_2017235.jpg"
-             alt="Ucayali Perù 2017 - NASA Landsat" loading="lazy" />
-        <div class="sat-compare-desc">Agosto 2017 · Landsat OLI · La foresta densa copre ancora quasi tutta l'area intorno alla nuova strada.</div>
+        <div class="sat-compare-label before-label">2011</div>
+        <img src="https://eros.usgs.gov/sites/eros.usgs.gov/files/2024-01/20110705_Rondonia-Intro.png"
+             alt="Rondônia 2011 Landsat" loading="lazy" />
+        <div class="sat-compare-desc">Luglio 2011 · Landsat 5 TM · La foresta si è già ridotta significativamente rispetto al 2000, ma esistono ancora grandi blocchi di vegetazione intatta.</div>
       </div>
       <div class="sat-compare-card">
-        <div class="sat-compare-label after-label">DOPO · 2022</div>
-        <img src="https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/imagerecords/150000/150513/nuevaitalia_oli_2022233.jpg"
-             alt="Ucayali Perù 2022 - NASA Landsat" loading="lazy" />
-        <div class="sat-compare-desc">Agosto 2022 · Landsat OLI · Stessa area 5 anni dopo: la foresta è quasi completamente scomparsa, sostituita da campi e pascoli.</div>
+        <div class="sat-compare-label after-label">2023</div>
+        <img src="https://eros.usgs.gov/sites/eros.usgs.gov/files/2024-01/20230730_Rondonia-Intro.png"
+             alt="Rondônia 2023 Landsat 9" loading="lazy" />
+        <div class="sat-compare-desc">Luglio 2023 · Landsat 9 OLI · 12 anni dopo i blocchi di foresta si sono frammentati ulteriormente: il verde cede al beige dei terreni disboscati.</div>
       </div>
     </div>
     <!-- CONFRONTO AGGIUNTIVO: Rondônia 2000 vs 2024 -->
     <div class="sat-compare-title fade-in" style="margin-top:1rem;">
       <h3>24 anni di devastazione — Rondônia, Brasile</h3>
-      <p>Confronto 2000–2024 sulla stessa area: a sinistra la foresta intatta, a destra la situazione attuale con incendi e disboscamento.</p>
+      <p>La stessa area di Rondônia fotografata da Landsat nel 2000 e nel 2024: la foresta tropicale è quasi scomparsa.</p>
     </div>
     <div class="sat-compare-grid fade-in">
       <div class="sat-compare-card">
         <div class="sat-compare-label before-label">PRIMA · 2000</div>
-        <img src="https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20000730.jpg"
-             alt="Rondônia 2000 NASA MODIS" loading="lazy" />
-        <div class="sat-compare-desc">Luglio 2000 · NASA MODIS · La foresta tropicale copre quasi tutta la regione di Rondônia.</div>
+        <img src="https://eros.usgs.gov/sites/eros.usgs.gov/files/2024-01/20010810_Rondonia-Intro.png"
+             alt="Rondônia 2001 Landsat" loading="lazy" />
+        <div class="sat-compare-desc">Agosto 2001 · Landsat 7 ETM+ · La foresta pluviale copre quasi interamente la regione — solo piccole aree sono già disboscate lungo le strade.</div>
       </div>
       <div class="sat-compare-card">
         <div class="sat-compare-label after-label">DOPO · 2024</div>
-        <img src="https://assets.science.nasa.gov/content/dam/science/esd/eo/images/imagerecords/153000/153175/amazon_deforestation_amo_20240804_lrg.jpg"
-             alt="Amazzonia agosto 2024 NASA MODIS" loading="lazy" />
-        <div class="sat-compare-desc">Agosto 2024 · NASA MODIS Terra · Incendi devastanti e deforestazione avanzata — il fumo copre migliaia di km² dell'Amazzonia brasiliana.</div>
+        <img src="https://eros.usgs.gov/sites/eros.usgs.gov/files/2025-03/L9-232-67-20240801-764full-resize-crop_0.png"
+             alt="Rondônia agosto 2024 Landsat 9" loading="lazy" />
+        <div class="sat-compare-desc">Agosto 2024 · Landsat 9 OLI · La foresta ha ceduto il posto a campi agricoli e pascoli: la perdita è evidente anche dallo spazio.</div>
       </div>
     </div>
 
@@ -1291,6 +1482,86 @@
       <div class="sat-map-caption">Fonte: NASA Earth Observatory · Enhanced Vegetation Index · Dati MODIS Terra</div>
     </div>
 
+  </div>
+</section>
+
+<!-- SECTION: MAPPA MONDIALE -->
+<section class="map-section" id="worldmap">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-tag">Distribuzione globale</span>
+      <h2 class="section-title">Dove si deforesta nel mondo</h2>
+      <p class="section-intro">Le zone rosse mostrano le aree con la maggiore perdita forestale. Clicca su una regione per vedere i dati specifici.</p>
+    </div>
+
+    <div class="worldmap-wrapper fade-in">
+      <svg class="world-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+        <!-- OCEANI (sfondo) -->
+        <rect width="1000" height="500" fill="#0a1a12" rx="12"/>
+
+        <!-- CONTINENTI semplificati -->
+        <!-- Nord America -->
+        <path class="continent" d="M 80 60 L 200 50 L 230 80 L 220 120 L 240 160 L 210 200 L 180 220 L 160 200 L 140 230 L 120 240 L 100 220 L 80 200 L 60 160 L 70 120 Z" fill="#1a472a" stroke="#2d6a4f" stroke-width="1.5"/>
+        <!-- America Centrale -->
+        <path class="continent" d="M 160 200 L 180 220 L 175 240 L 160 250 L 145 240 L 140 230 Z" fill="#1a472a" stroke="#2d6a4f" stroke-width="1"/>
+        <!-- Sud America -->
+        <path class="hotspot" id="hs-amazon" data-region="Amazzonia (Brasile)" data-loss="34%" data-detail="34% della perdita forestale mondiale &middot; 5 milioni km&sup2; di foresta &middot; 2,7 milioni km&sup2; gi&agrave; persi" d="M 160 250 L 210 240 L 250 260 L 270 300 L 260 360 L 230 400 L 190 410 L 160 380 L 140 340 L 130 300 L 140 270 Z" fill="#2d6a4f" stroke="#52b788" stroke-width="2"/>
+        <!-- Europa -->
+        <path class="continent" d="M 440 60 L 510 55 L 530 80 L 520 110 L 490 120 L 460 115 L 440 100 L 430 80 Z" fill="#1a472a" stroke="#2d6a4f" stroke-width="1.5"/>
+        <!-- Africa -->
+        <path class="hotspot" id="hs-congo" data-region="Africa Centrale (Congo)" data-loss="22%" data-detail="22% della perdita forestale mondiale &middot; Seconda foresta tropicale pi&ugrave; grande &middot; Minacciata da agricoltura e conflitti" d="M 450 130 L 510 120 L 550 140 L 570 180 L 560 250 L 540 300 L 510 330 L 480 320 L 455 290 L 440 240 L 430 190 L 440 160 Z" fill="#2d6a4f" stroke="#52b788" stroke-width="2"/>
+        <!-- Asia -->
+        <path class="continent" d="M 560 55 L 700 45 L 780 60 L 820 80 L 800 120 L 760 140 L 700 130 L 650 140 L 600 130 L 570 110 L 550 90 Z" fill="#1a472a" stroke="#2d6a4f" stroke-width="1.5"/>
+        <!-- Asia Sud-Est -->
+        <path class="hotspot" id="hs-sea" data-region="Asia Sud-Orientale" data-loss="20%" data-detail="20% della perdita forestale mondiale &middot; Indonesia, Malaysia, Myanmar &middot; Principale causa: olio di palma e legname" d="M 720 160 L 780 150 L 820 170 L 830 210 L 800 240 L 760 240 L 730 220 L 710 190 Z" fill="#2d6a4f" stroke="#52b788" stroke-width="2"/>
+        <!-- Isole Asia Sud-Est -->
+        <ellipse cx="770" cy="260" rx="25" ry="12" class="hotspot" data-region="Indonesia" data-loss="Borneo/Sumatra" data-detail="Indonesia: ha perso il 40% della foresta pluviale in 40 anni &middot; Principale produttore mondiale di olio di palma" fill="#2d6a4f" stroke="#52b788" stroke-width="2"/>
+        <ellipse cx="820" cy="255" rx="18" ry="10" class="continent" fill="#1a472a" stroke="#2d6a4f" stroke-width="1"/>
+        <!-- America Centrale -->
+        <path class="hotspot" id="hs-camcentral" data-region="America Centrale" data-loss="14%" data-detail="14% della perdita forestale mondiale &middot; Honduras, Guatemala, Nicaragua &middot; Causa principale: allevamento bovino e coltivazioni" d="M 145 240 L 175 240 L 185 255 L 170 268 L 150 265 L 140 255 Z" fill="#2d6a4f" stroke="#52b788" stroke-width="2"/>
+        <!-- Australia -->
+        <path class="continent" d="M 800 300 L 900 290 L 950 320 L 940 380 L 900 400 L 840 390 L 800 360 L 790 330 Z" fill="#1a472a" stroke="#2d6a4f" stroke-width="1.5"/>
+        <!-- Russia/Asia Nord -->
+        <path class="continent" d="M 530 30 L 700 20 L 820 30 L 830 55 L 780 60 L 700 45 L 560 55 Z" fill="#1a472a" stroke="#2d6a4f" stroke-width="1"/>
+      </svg>
+
+      <!-- TOOLTIP -->
+      <div class="map-tooltip" id="mapTooltip">
+        <div class="map-tooltip-region" id="ttRegion">Amazzonia</div>
+        <div class="map-tooltip-loss" id="ttLoss">34%</div>
+        <div class="map-tooltip-detail" id="ttDetail">della perdita forestale mondiale</div>
+      </div>
+    </div>
+
+    <!-- LEGENDA + DATI REGIONI -->
+    <div class="map-legend fade-in">
+      <div class="map-legend-item" data-target="hs-amazon">
+        <span class="legend-dot" style="background:#52b788"></span>
+        <span class="legend-region">Amazzonia (Brasile)</span>
+        <span class="legend-pct">34%</span>
+      </div>
+      <div class="map-legend-item" data-target="hs-congo">
+        <span class="legend-dot" style="background:#52b788"></span>
+        <span class="legend-region">Africa Centrale (Congo)</span>
+        <span class="legend-pct">22%</span>
+      </div>
+      <div class="map-legend-item" data-target="hs-sea">
+        <span class="legend-dot" style="background:#52b788"></span>
+        <span class="legend-region">Asia Sud-Orientale</span>
+        <span class="legend-pct">20%</span>
+      </div>
+      <div class="map-legend-item" data-target="hs-camcentral">
+        <span class="legend-dot" style="background:#52b788"></span>
+        <span class="legend-region">America Centrale</span>
+        <span class="legend-pct">14%</span>
+      </div>
+      <div class="map-legend-item">
+        <span class="legend-dot" style="background:#1a472a;border:1px solid #2d6a4f"></span>
+        <span class="legend-region">Altre regioni</span>
+        <span class="legend-pct">10%</span>
+      </div>
+    </div>
+    <p class="map-source">Fonte: Global Forest Watch, 2023 &middot; Clicca sulle zone verdi evidenziate per i dettagli</p>
   </div>
 </section>
 
@@ -1463,6 +1734,53 @@
   </div>
 </section>
 
+<!-- SECTION: GRAFICO STORICO -->
+<section class="history-section" id="history">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-tag">Dati storici 1970&ndash;2024</span>
+      <h2 class="section-title">Mezzo secolo di perdita</h2>
+      <p class="section-intro">
+        La superficie forestale dell'Amazzonia brasiliana dal 1970 a oggi. Ogni calo sulla curva corrisponde a scelte politiche, crisi economiche o pressioni agricole globali.
+      </p>
+    </div>
+
+    <div class="history-chart-wrapper fade-in">
+      <canvas id="historyChart"></canvas>
+    </div>
+
+    <div class="history-events fade-in">
+      <h3>Eventi chiave sulla timeline</h3>
+      <div class="events-grid">
+        <div class="event-card">
+          <span class="event-year">1970</span>
+          <p>Avvio del piano BR-364: il governo brasiliano incentiva la colonizzazione dell'Amazzonia con strade e insediamenti.</p>
+        </div>
+        <div class="event-card">
+          <span class="event-year">1988</span>
+          <p>L'attivista Chico Mendes viene assassinato. Picco di deforestazione: oltre 21.000 km&sup2;/anno. Scandalo internazionale.</p>
+        </div>
+        <div class="event-card">
+          <span class="event-year">2004</span>
+          <p>Il Brasile adotta il PPCDAm: rete di parchi nazionali, controlli satellite e moratoria sulla soia. La deforestazione inizia a calare.</p>
+        </div>
+        <div class="event-card">
+          <span class="event-year">2019</span>
+          <p>Nuova ondata di incendi. Il governo Bolsonaro allenta i controlli ambientali: la deforestazione risale del 30% in un anno.</p>
+        </div>
+        <div class="event-card">
+          <span class="event-year">2023</span>
+          <p>Il governo Lula reintroduce politiche di protezione. La deforestazione scende del 50% rispetto al 2022. Segnale di speranza.</p>
+        </div>
+        <div class="event-card">
+          <span class="event-year">2024</span>
+          <p>Nonostante i progressi, gravi siccit&agrave; colpiscono l'Amazzonia. Il fuoco si diffonde in aree precedentemente risparmiato.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- SECTION 5: SOLUZIONI -->
 <section class="solutions-section" id="solutions">
   <div class="container">
@@ -1566,7 +1884,7 @@
       <li><strong>FSC International</strong> &mdash; Certification standards</li>
     </ul>
     <div class="footer-bottom">
-      Progetto realizzato da <strong>Alessandro Zavarise</strong>, <strong>Ersi Arapaj</strong>, <strong>Enrico Bozzolin</strong> &middot; Anno scolastico 2025&ndash;26
+      Progetto realizzato da <strong>Alessandro Zavarise</strong>, <strong>Ersi Arapaji</strong>, <strong>Enrico Bozzolin</strong> &middot; Anno scolastico 2024&ndash;25
     </div>
   </div>
 </footer>
@@ -1587,9 +1905,10 @@
     { year: 2010, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20100802.jpg', caption: 'Agosto 2010 · Approvato il nuovo Codice Forestale brasiliano, aumenta la superficie protetta' },
     { year: 2011, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20110805.jpg', caption: 'Agosto 2011 · La deforestazione è scesa all\'80% in meno rispetto al picco del 2004' },
     { year: 2012, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20120718.jpg', caption: 'Luglio 2012 · In 12 anni enormi aree verdi sono diventate terreni agricoli e pascoli — il confronto è impressionante' },
-    { year: 2017, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/imagerecords/150000/150513/nuevaitalia_oli_2017235.jpg', caption: 'Agosto 2017 · Ucayali, Perù (Landsat OLI) · La deforestazione segue una nuova strada tagliata nella foresta — il classico pattern "a lisca di pesce" si espande rapidamente', location: 'Ucayali, Perù' },
-    { year: 2022, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/imagerecords/150000/150513/nuevaitalia_oli_2022233.jpg', caption: 'Agosto 2022 · Ucayali, Perù (Landsat OLI) · Stessa area 5 anni dopo: la foresta è quasi completamente sparita, sostituita da campi agricoli e pascoli per il bestiame', location: 'Ucayali, Perù' },
-    { year: 2024, url: 'https://assets.science.nasa.gov/content/dam/science/esd/eo/images/imagerecords/153000/153175/amazon_deforestation_amo_20240804_lrg.jpg', caption: 'Agosto 2024 · Amazzonia brasiliana (MODIS Terra) · Incendi e disboscamenti lungo la "frontiera della deforestazione" negli stati di Amazonas e Pará — il fumo copre migliaia di km²', location: 'Amazonas/Pará, Brasile' }
+    { year: 2016, url: 'https://eros.usgs.gov/sites/eros.usgs.gov/files/2024-01/20160718_Rondonia-Intro.png', caption: 'Luglio 2016 · Rondônia, Brasile (Landsat 8 OLI) · La deforestazione continua ad avanzare: le aree disboscate ormai superano quelle ancora coperte da foresta' },
+    { year: 2019, url: 'https://eros.usgs.gov/sites/eros.usgs.gov/files/2024-01/20190727_Rondonia-Intro.png', caption: 'Luglio 2019 · Rondônia, Brasile (Landsat 8 OLI) · Anno record di incendi: la foresta residua è ulteriormente erosa da fuochi dolosi usati per liberare terreni agricoli' },
+    { year: 2023, url: 'https://eros.usgs.gov/sites/eros.usgs.gov/files/2024-01/20230730_Rondonia-Intro.png', caption: 'Luglio 2023 · Rondônia, Brasile (Landsat 9 OLI) · La foresta ha perso oltre il 35% della sua copertura originale: il verde si riduce anno dopo anno' },
+    { year: 2024, url: 'https://eros.usgs.gov/sites/eros.usgs.gov/files/2025-03/L9-232-67-20240801-764full-resize-crop_0.png', caption: 'Agosto 2024 · Rondônia, Brasile (Landsat 9 OLI) · La situazione più recente: la deforestazione rimane una delle più gravi al mondo nonostante le politiche di protezione' }
   ];
 
   let satIndex = 0;
@@ -1672,6 +1991,130 @@
   });
 
   buildSatTimeline();
+
+  /* ===== LIVE TREE COUNTER ===== */
+  const treeCounter = document.getElementById('liveTreeCounter');
+  const startTime = Date.now();
+  const treesPerSecond = 475.6; // 15 mld / anno
+  function updateTreeCounter() {
+    const elapsed = (Date.now() - startTime) / 1000;
+    const trees = Math.floor(elapsed * treesPerSecond);
+    treeCounter.textContent = trees.toLocaleString('it-IT');
+    requestAnimationFrame(updateTreeCounter);
+  }
+  updateTreeCounter();
+
+  /* ===== WORLD MAP INTERACTIVE ===== */
+  const hotspots = document.querySelectorAll('.hotspot');
+  const tooltip = document.getElementById('mapTooltip');
+  const ttRegion = document.getElementById('ttRegion');
+  const ttLoss = document.getElementById('ttLoss');
+  const ttDetail = document.getElementById('ttDetail');
+  const mapWrapper = document.querySelector('.worldmap-wrapper');
+
+  hotspots.forEach(hs => {
+    hs.addEventListener('mouseenter', (e) => {
+      ttRegion.textContent = hs.dataset.region;
+      ttLoss.textContent = hs.dataset.loss;
+      ttDetail.textContent = hs.dataset.detail;
+      tooltip.classList.add('visible');
+      hs.classList.add('active');
+    });
+    hs.addEventListener('mousemove', (e) => {
+      const rect = mapWrapper.getBoundingClientRect();
+      let x = e.clientX - rect.left + 15;
+      let y = e.clientY - rect.top + 15;
+      if (x + 240 > rect.width) x = e.clientX - rect.left - 245;
+      if (y + 120 > rect.height) y = e.clientY - rect.top - 125;
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+    });
+    hs.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('visible');
+      hs.classList.remove('active');
+    });
+  });
+
+  // Legend click highlights map region
+  document.querySelectorAll('.map-legend-item[data-target]').forEach(item => {
+    item.addEventListener('click', () => {
+      const target = document.getElementById(item.dataset.target);
+      if (target) {
+        target.dispatchEvent(new MouseEvent('mouseenter'));
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  });
+
+  /* ===== HISTORY CHART ===== */
+  let historyChartInit = false;
+  const historyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !historyChartInit) {
+        historyChartInit = true;
+        const ctx = document.getElementById('historyChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['1970','1975','1980','1985','1988','1990','1995','2000','2004','2006','2008','2010','2012','2014','2016','2018','2019','2020','2021','2022','2023','2024'],
+            datasets: [{
+              label: 'Foresta Amazzonica rimasta (milioni km²)',
+              data: [4.10, 4.02, 3.90, 3.75, 3.62, 3.55, 3.42, 3.33, 3.22, 3.18, 3.14, 3.11, 3.09, 3.07, 3.05, 3.03, 3.00, 2.98, 2.97, 2.95, 2.97, 2.96],
+              borderColor: '#52b788',
+              backgroundColor: 'rgba(82,183,136,0.08)',
+              borderWidth: 3,
+              pointRadius: 5,
+              pointBackgroundColor: function(ctx) {
+                const events = {1:0,7:0,13:0,18:0,20:0,21:0};
+                return events[ctx.dataIndex] !== undefined ? '#e63946' : '#52b788';
+              },
+              pointBorderColor: '#0d1b0f',
+              pointBorderWidth: 2,
+              tension: 0.35,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: 'rgba(10,26,18,0.95)',
+                titleColor: '#52b788',
+                bodyColor: '#e8f3ea',
+                borderColor: '#52b788',
+                borderWidth: 1,
+                padding: 12,
+                callbacks: {
+                  label: (ctx) => ' ' + ctx.parsed.y.toFixed(2) + ' milioni km²'
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { color: 'rgba(82,183,136,0.08)' },
+                ticks: { color: '#a0c4ad', font: { family: 'Inter', size: 11 } }
+              },
+              y: {
+                min: 2.85,
+                max: 4.20,
+                grid: { color: 'rgba(82,183,136,0.08)' },
+                ticks: {
+                  color: '#a0c4ad',
+                  font: { family: 'Inter', size: 11 },
+                  callback: (v) => v.toFixed(2) + ' M km²'
+                }
+              }
+            }
+          }
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  const historySection = document.getElementById('historyChart');
+  if (historySection) historyObserver.observe(historySection);
 
   /* ===== NAVBAR SCROLL EFFECT ===== */
   const navbar = document.getElementById('navbar');
