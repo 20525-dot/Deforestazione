@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deforestazione - Il pianeta perde le sue foreste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0d1b0f;
+    color: #e8f3ea;
+    line-height: 1.7;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  a {
+    color: #52b788;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  a:hover {
+    color: #e9c46a;
+  }
+  ::selection {
+    background: #52b788;
+    color: #0d1b0f;
+  }
+
+  /* ===== READING PROGRESS BAR ===== */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 0%;
+    background: linear-gradient(90deg, #52b788, #e9c46a);
+    z-index: 10000;
+    transition: width 0.1s ease;
+    box-shadow: 0 0 10px rgba(82, 183, 136, 0.6);
+  }
+
+  /* ===== NAVBAR ===== */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 1.2rem 3rem;
+    background: rgba(13, 27, 15, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(82, 183, 136, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.4s ease;
+  }
+  .navbar.scrolled {
+    padding: 0.8rem 3rem;
+    background: rgba(13, 27, 15, 0.95);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #52b788;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .nav-logo-icon {
+    font-size: 1.8rem;
+  }
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2.2rem;
+  }
+  .nav-links a {
+    color: #e8f3ea;
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding: 0.3rem 0;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #52b788, #e9c46a);
+    transition: width 0.3s ease;
+  }
+  .nav-links a:hover::after,
+  .nav-links a.active::after {
+    width: 100%;
+  }
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #e8f3ea;
+    font-size: 1.8rem;
+    cursor: pointer;
+  }
+
+  /* ===== HERO SECTION ===== */
+  .hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at center top, rgba(45, 106, 79, 0.4) 0%, transparent 60%),
+      linear-gradient(135deg, #0d1b0f 0%, #1a472a 100%);
+    padding: 8rem 2rem 4rem;
+  }
+  #leaves-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    width: 100%;
+  }
+  .hero-tagline {
+    color: #52b788;
+    font-size: 0.95rem;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.2s forwards;
+  }
+  .hero h1 {
+    font-size: clamp(3.5rem, 10vw, 8rem);
+    font-weight: 900;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, #ffffff 0%, #52b788 50%, #e9c46a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1.2s ease 0.4s forwards;
+    text-shadow: 0 0 80px rgba(82, 183, 136, 0.3);
+  }
+  .hero-subtitle {
+    font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+    color: #c8d8c9;
+    font-style: italic;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 3.5rem;
+    opacity: 0;
+    animation: fadeUp 1.2s ease 0.6s forwards;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.8rem;
+    max-width: 1000px;
+    margin: 0 auto 3.5rem;
+  }
+  .stat-card {
+    background: linear-gradient(135deg, rgba(82, 183, 136, 0.08), rgba(13, 27, 15, 0.5));
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(82, 183, 136, 0.25);
+    border-radius: 20px;
+    padding: 2.2rem 1.5rem;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    opacity: 0;
+    transform: translateY(30px);
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(82, 183, 136, 0.15), transparent);
+    transition: left 0.7s ease;
+  }
+  .stat-card:hover::before {
+    left: 100%;
+  }
+  .stat-card:hover {
+    transform: translateY(-10px);
+    border-color: #e9c46a;
+    box-shadow: 0 20px 50px rgba(233, 196, 106, 0.15);
+  }
+  .stat-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .stat-card:nth-child(1) { transition-delay: 0.8s; }
+  .stat-card:nth-child(2) { transition-delay: 1.0s; }
+  .stat-card:nth-child(3) { transition-delay: 1.2s; }
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 900;
+    color: #e9c46a;
+    line-height: 1;
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+  .stat-label {
+    font-size: 0.95rem;
+    color: #c8d8c9;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .hero-group {
+    color: #c8d8c9;
+    font-size: 0.9rem;
+    letter-spacing: 1.2px;
+    opacity: 0;
+    animation: fadeUp 1.2s ease 1.6s forwards;
+    border-top: 1px solid rgba(82, 183, 136, 0.2);
+    padding-top: 1.8rem;
+    margin-top: 1rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-group strong {
+    color: #52b788;
+    font-weight: 600;
+  }
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #52b788;
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    z-index: 3;
+    animation: bounce 2s infinite;
+  }
+  .scroll-indicator::after {
+    content: '';
+    display: block;
+    width: 2px;
+    height: 30px;
+    background: linear-gradient(180deg, #52b788, transparent);
+    margin: 0.8rem auto 0;
+  }
+
+  /* ===== SECTIONS GENERAL ===== */
+  section {
+    padding: 7rem 2rem;
+    position: relative;
+  }
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .section-tag {
+    display: inline-block;
+    color: #e9c46a;
+    font-size: 0.85rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    position: relative;
+    padding-left: 50px;
+  }
+  .section-tag::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 35px;
+    height: 2px;
+    background: #e9c46a;
+  }
+  .section-title {
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #ffffff 0%, #52b788 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .section-intro {
+    font-size: 1.15rem;
+    color: #c8d8c9;
+    max-width: 800px;
+    margin-bottom: 4rem;
+  }
+
+  /* ===== SECTION: COS'È ===== */
+  .what-section {
+    background: linear-gradient(180deg, #0d1b0f 0%, #11231a 100%);
+  }
+  .definition-box {
+    background: linear-gradient(135deg, rgba(82, 183, 136, 0.1), rgba(26, 71, 42, 0.3));
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(82, 183, 136, 0.3);
+    border-left: 5px solid #52b788;
+    border-radius: 16px;
+    padding: 2.5rem 2.5rem;
+    margin-bottom: 3.5rem;
+    font-size: 1.15rem;
+    color: #e8f3ea;
+    position: relative;
+  }
+  .definition-box::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 25px;
+    font-family: 'Playfair Display', serif;
+    font-size: 7rem;
+    color: rgba(233, 196, 106, 0.2);
+    line-height: 1;
+  }
+  .definition-box strong {
+    color: #e9c46a;
+    font-weight: 600;
+  }
+  .chart-container {
+    background: linear-gradient(135deg, rgba(13, 27, 15, 0.6), rgba(26, 71, 42, 0.3));
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(82, 183, 136, 0.2);
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-top: 2rem;
+    position: relative;
+  }
+  .chart-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: #e9c46a;
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+  }
+  .chart-source {
+    color: #8fae93;
+    font-size: 0.85rem;
+    font-style: italic;
+    margin-bottom: 1.8rem;
+  }
+  .chart-wrapper {
+    position: relative;
+    height: 400px;
+    width: 100%;
+  }
+
+  /* ===== SECTION: CAUSE ===== */
+  .causes-section {
+    background: linear-gradient(180deg, #11231a 0%, #0d1b0f 100%);
+  }
+  .causes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    margin-bottom: 4rem;
+  }
+  .cause-column {
+    background: linear-gradient(135deg, rgba(82, 183, 136, 0.06), rgba(26, 71, 42, 0.2));
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(82, 183, 136, 0.2);
+    border-radius: 20px;
+    padding: 2.5rem;
+    transition: transform 0.4s ease, border-color 0.4s ease;
+  }
+  .cause-column:hover {
+    transform: translateY(-5px);
+    border-color: rgba(233, 196, 106, 0.5);
+  }
+  .cause-column h3 {
+    font-size: 1.7rem;
+    color: #e9c46a;
+    margin-bottom: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .cause-list {
+    list-style: none;
+  }
+  .cause-list li {
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(82, 183, 136, 0.15);
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .cause-list li:last-child {
+    border-bottom: none;
+  }
+  .cause-icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #2d6a4f, #52b788);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+  .cause-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: #fff;
+  }
+  .cause-text strong {
+    display: block;
+    color: #fff;
+    margin-bottom: 0.2rem;
+    font-weight: 600;
+  }
+  .cause-text span {
+    color: #c8d8c9;
+    font-size: 0.95rem;
+  }
+
+  /* ===== SECTION: CONSEGUENZE ===== */
+  .consequences-section {
+    background: linear-gradient(180deg, #0d1b0f 0%, #11231a 100%);
+  }
+  .consequences-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+  .consequence-card {
+    background: linear-gradient(135deg, rgba(13, 27, 15, 0.7), rgba(26, 71, 42, 0.3));
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    border: 1px solid rgba(82, 183, 136, 0.2);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .consequence-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    transition: height 0.4s ease;
+  }
+  .consequence-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+  }
+  .consequence-card.climate::before { background: #e63946; }
+  .consequence-card.biodiversity::before { background: #e9c46a; }
+  .consequence-card.community::before { background: #9d4edd; }
+  .consequence-card.climate { border-color: rgba(230, 57, 70, 0.3); }
+  .consequence-card.biodiversity { border-color: rgba(233, 196, 106, 0.3); }
+  .consequence-card.community { border-color: rgba(157, 78, 221, 0.3); }
+  .consequence-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+  .consequence-card.climate .consequence-icon {
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.2), rgba(230, 57, 70, 0.4));
+    box-shadow: 0 0 30px rgba(230, 57, 70, 0.3);
+  }
+  .consequence-card.biodiversity .consequence-icon {
+    background: linear-gradient(135deg, rgba(233, 196, 106, 0.2), rgba(233, 196, 106, 0.4));
+    box-shadow: 0 0 30px rgba(233, 196, 106, 0.3);
+  }
+  .consequence-card.community .consequence-icon {
+    background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(157, 78, 221, 0.4));
+    box-shadow: 0 0 30px rgba(157, 78, 221, 0.3);
+  }
+  .consequence-icon svg {
+    width: 36px;
+    height: 36px;
+    fill: #fff;
+  }
+  .consequence-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+  .consequence-card.climate h3 { color: #ff6b78; }
+  .consequence-card.biodiversity h3 { color: #f4d27a; }
+  .consequence-card.community h3 { color: #c98bff; }
+  .consequence-card ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .consequence-card ul li {
+    color: #c8d8c9;
+    padding: 0.6rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .consequence-card ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1.1rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .consequence-card.climate ul li::before { background: #e63946; }
+  .consequence-card.biodiversity ul li::before { background: #e9c46a; }
+  .consequence-card.community ul li::before { background: #9d4edd; }
+
+  /* ===== SECTION: SOLUZIONI / TIMELINE ===== */
+  .solutions-section {
+    background: linear-gradient(180deg, #11231a 0%, #0d1b0f 100%);
+  }
+  .timeline {
+    position: relative;
+    max-width: 950px;
+    margin: 0 auto 4rem;
+    padding-left: 3rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 12px;
+    width: 3px;
+    background: linear-gradient(180deg, #52b788, #e9c46a, #52b788);
+    border-radius: 3px;
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 3.5rem;
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .timeline-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2.6rem;
+    top: 0.5rem;
+    width: 22px;
+    height: 22px;
+    background: #0d1b0f;
+    border: 4px solid #e9c46a;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(233, 196, 106, 0.15);
+  }
+  .timeline-item h3 {
+    color: #e9c46a;
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+  }
+  .timeline-content {
+    background: linear-gradient(135deg, rgba(82, 183, 136, 0.07), rgba(26, 71, 42, 0.2));
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(82, 183, 136, 0.2);
+    border-radius: 16px;
+    padding: 1.8rem 2rem;
+  }
+  .timeline-content p {
+    color: #c8d8c9;
+    margin-bottom: 0.6rem;
+  }
+  .timeline-content p:last-child {
+    margin-bottom: 0;
+  }
+  .timeline-content strong {
+    color: #52b788;
+    font-weight: 600;
+  }
+  .highlight-stat {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(233, 196, 106, 0.15), rgba(233, 196, 106, 0.05));
+    color: #e9c46a;
+    padding: 0.15rem 0.7rem;
+    border-radius: 8px;
+    font-weight: 700;
+    border: 1px solid rgba(233, 196, 106, 0.3);
+  }
+
+  /* ===== SECTION: CONCLUSIONI ===== */
+  .conclusions-section {
+    background: linear-gradient(180deg, #0d1b0f 0%, #050d06 100%);
+  }
+  .conclusions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+  .conclusion-card {
+    background: linear-gradient(135deg, rgba(82, 183, 136, 0.1), rgba(13, 27, 15, 0.5));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(82, 183, 136, 0.3);
+    border-radius: 24px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .conclusion-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top center, rgba(82, 183, 136, 0.1), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+  .conclusion-card:hover {
+    transform: translateY(-12px) scale(1.02);
+    border-color: #e9c46a;
+    box-shadow: 0 30px 70px rgba(82, 183, 136, 0.2);
+  }
+  .conclusion-card:hover::after {
+    opacity: 1;
+  }
+  .conclusion-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #52b788, #e9c46a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 1.2rem;
+  }
+  .conclusion-card h3 {
+    font-size: 1.4rem;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+  .conclusion-card p {
+    color: #c8d8c9;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: #050d06;
+    border-top: 1px solid rgba(82, 183, 136, 0.2);
+    padding: 4rem 2rem 2rem;
+  }
+  .footer-container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .footer-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: #e9c46a;
+    margin-bottom: 1.8rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(233, 196, 106, 0.2);
+  }
+  .footer-sources {
+    list-style: none;
+    columns: 2;
+    column-gap: 3rem;
+    margin-bottom: 3rem;
+  }
+  .footer-sources li {
+    padding: 0.6rem 0;
+    color: #c8d8c9;
+    font-size: 0.92rem;
+    break-inside: avoid;
+    padding-left: 1.5rem;
+    position: relative;
+    line-height: 1.5;
+  }
+  .footer-sources li::before {
+    content: '◆';
+    color: #52b788;
+    position: absolute;
+    left: 0;
+    top: 0.6rem;
+    font-size: 0.7rem;
+  }
+  .footer-sources li strong {
+    color: #e8f3ea;
+    font-weight: 600;
+  }
+  .footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(82, 183, 136, 0.15);
+    color: #8fae93;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+  }
+  .footer-bottom strong {
+    color: #52b788;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-10px); }
+  }
+  .fade-in {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ===== SATELLITE SECTION ===== */
+  .satellite-section {
+    padding: 8rem 0;
+    background: linear-gradient(180deg, #0d1b0f 0%, #0a1208 50%, #0d1b0f 100%);
+    position: relative;
+  }
+  .sat-slider-wrapper {
+    margin: 3rem 0 4rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(82,183,136,0.2);
+    border-radius: 20px;
+    padding: 2.5rem;
+  }
+  .sat-year-display {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+  .sat-year-label {
+    font-size: 0.9rem;
+    color: #52b788;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 600;
+  }
+  .sat-year-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #e9c46a;
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(233,196,106,0.4);
+  }
+  .sat-image-container {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    background: #0a1208;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sat-image-container img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.4s ease;
+    border-radius: 12px;
+  }
+  .sat-image-container img.loading {
+    opacity: 0.3;
+  }
+  .sat-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0,0,0,0.75);
+    color: #52b788;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    border: 1px solid rgba(82,183,136,0.4);
+    backdrop-filter: blur(8px);
+  }
+  .sat-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.85));
+    color: #e8f3ea;
+    font-size: 0.88rem;
+    padding: 2rem 1.5rem 1rem;
+    border-radius: 0 0 12px 12px;
+    transition: opacity 0.3s;
+  }
+  .sat-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .sat-btn {
+    background: rgba(82,183,136,0.15);
+    border: 1px solid rgba(82,183,136,0.4);
+    color: #52b788;
+    font-size: 1.3rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+  .sat-btn:hover {
+    background: rgba(82,183,136,0.3);
+    transform: scale(1.05);
+  }
+  .sat-timeline {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    flex: 1;
+    justify-content: center;
+  }
+  .sat-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(82,183,136,0.3);
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.6rem;
+    color: #a0c4ad;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-weight: 600;
+  }
+  .sat-dot:hover {
+    border-color: #52b788;
+    color: #52b788;
+    background: rgba(82,183,136,0.1);
+  }
+  .sat-dot.active {
+    background: #52b788;
+    border-color: #52b788;
+    color: #0d1b0f;
+    box-shadow: 0 0 16px rgba(82,183,136,0.5);
+    font-size: 0.65rem;
+  }
+  .sat-play-row {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .sat-play-btn {
+    background: linear-gradient(135deg, #2d6a4f, #52b788);
+    border: none;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.75rem 1.8rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+  }
+  .sat-play-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(82,183,136,0.4);
+  }
+  .sat-play-btn.playing {
+    background: linear-gradient(135deg, #e63946, #c1121f);
+  }
+  .sat-source-link {
+    font-size: 0.85rem;
+    color: #a0c4ad;
+  }
+  .sat-compare-title {
+    text-align: center;
+    margin: 2rem 0 2.5rem;
+  }
+  .sat-compare-title h3 {
+    font-size: 1.8rem;
+    color: #e9c46a;
+    margin-bottom: 0.5rem;
+  }
+  .sat-compare-title p {
+    color: #a0c4ad;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .sat-compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+  .sat-compare-card {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    position: relative;
+    background: #0a1208;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .sat-compare-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .sat-compare-card img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .sat-compare-card:hover img {
+    transform: scale(1.03);
+  }
+  .sat-compare-label {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    z-index: 2;
+  }
+  .before-label {
+    background: rgba(82,183,136,0.85);
+    color: #0d1b0f;
+  }
+  .after-label {
+    background: rgba(230,57,70,0.85);
+    color: #fff;
+  }
+  .sat-compare-desc {
+    padding: 1rem 1.2rem;
+    font-size: 0.85rem;
+    color: #a0c4ad;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .sat-map-wrapper, .sat-evi-wrapper {
+    margin-bottom: 4rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(82,183,136,0.15);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+  .sat-map-wrapper h3, .sat-evi-wrapper h3 {
+    font-size: 1.4rem;
+    color: #52b788;
+    margin-bottom: 0.6rem;
+  }
+  .sat-map-wrapper p, .sat-evi-wrapper p {
+    color: #a0c4ad;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .sat-map-img {
+    width: 100%;
+    border-radius: 10px;
+    display: block;
+    border: 1px solid rgba(82,183,136,0.1);
+  }
+  .sat-map-caption {
+    font-size: 0.78rem;
+    color: #6b8f74;
+    margin-top: 0.8rem;
+    font-style: italic;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .navbar { padding: 1rem 1.5rem; }
+    .menu-toggle { display: block; }
+    .nav-links {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(13, 27, 15, 0.98);
+      flex-direction: column;
+      padding: 1.5rem;
+      gap: 1rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      border-bottom: 1px solid rgba(82, 183, 136, 0.2);
+    }
+    .nav-links.open {
+      max-height: 400px;
+    }
+    .stat-grid {
+      grid-template-columns: 1fr;
+    }
+    .sat-compare-grid {
+      grid-template-columns: 1fr;
+    }
+    .sat-compare-card img {
+      height: 220px;
+    }
+    .sat-controls {
+      flex-wrap: wrap;
+    }
+    .causes-grid,
+    .consequences-grid,
+    .conclusions-grid {
+      grid-template-columns: 1fr;
+    }
+    .footer-sources {
+      columns: 1;
+    }
+    .definition-box {
+      padding: 2rem 1.5rem;
+    }
+    section {
+      padding: 5rem 1.5rem;
+    }
+    .chart-wrapper {
+      height: 320px;
+    }
+    .timeline {
+      padding-left: 2.5rem;
+    }
+    .timeline-item::before {
+      left: -2.1rem;
+    }
+  }
+  @media (max-width: 500px) {
+    .navbar { padding: 0.8rem 1rem; }
+    .hero { padding-top: 6rem; }
+    .nav-logo { font-size: 1.2rem; }
+    .chart-container {
+      padding: 1.5rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Navbar -->
+<nav class="navbar" id="navbar">
+  <div class="nav-logo">
+    <span class="nav-logo-icon">&#x1F33F;</span>
+    <span>SILVAE</span>
+  </div>
+  <button class="menu-toggle" id="menuToggle" aria-label="Menu">&#9776;</button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#what">Cos'è</a></li>
+    <li><a href="#satellite">Satelliti NASA</a></li>
+    <li><a href="#causes">Cause</a></li>
+    <li><a href="#consequences">Conseguenze</a></li>
+    <li><a href="#solutions">Soluzioni</a></li>
+    <li><a href="#conclusions">Conclusioni</a></li>
+  </ul>
+</nav>
+
+<!-- HERO SECTION -->
+<section class="hero" id="hero">
+  <canvas id="leaves-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-tagline">Un'emergenza globale</div>
+    <h1>DEFORESTAZIONE</h1>
+    <p class="hero-subtitle">Il pianeta perde le sue foreste</p>
+
+    <div class="stat-grid">
+      <div class="stat-card" data-animate>
+        <span class="stat-number" data-counter="15" data-suffix=" MLD">0</span>
+        <span class="stat-label">Alberi abbattuti / anno</span>
+      </div>
+      <div class="stat-card" data-animate>
+        <span class="stat-number" data-counter="46" data-suffix="%">0</span>
+        <span class="stat-label">Foreste già perdute</span>
+      </div>
+      <div class="stat-card" data-animate>
+        <span class="stat-number" data-counter="1" data-suffix=" ha/sec">0</span>
+        <span class="stat-label">Velocità di distruzione</span>
+      </div>
+    </div>
+
+    <div class="hero-group">
+      <strong>Alessandro Zavarise</strong> &middot; <strong>Ersi Arapaji</strong> &middot; <strong>Enrico Bozzolin</strong><br />
+      Anno scolastico 2024&ndash;25
+    </div>
+  </div>
+  <div class="scroll-indicator">Scorri</div>
+</section>
+
+<!-- SECTION 2: COS'È -->
+<section class="what-section" id="what">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-tag">Definizione</span>
+      <h2 class="section-title">Che cos'è la deforestazione?</h2>
+      <p class="section-intro">
+        Un fenomeno complesso che ridefinisce gli equilibri del nostro pianeta, modificando paesaggi, clima e vite umane.
+      </p>
+    </div>
+
+    <div class="definition-box fade-in">
+      La <strong>deforestazione</strong> è la riduzione permanente delle aree forestali del pianeta, dovuta principalmente all'azione umana. Si tratta della <strong>conversione delle foreste in altri usi del suolo</strong>: agricoltura intensiva, allevamento, infrastrutture, miniere o aree urbane. A differenza del degrado forestale (perdita temporanea), la deforestazione è generalmente <strong>irreversibile</strong> e comporta la scomparsa totale dell'ecosistema forestale, con conseguenze drammatiche per il clima, la biodiversità e le comunità umane.
+    </div>
+
+    <div class="chart-container fade-in">
+      <h3 class="chart-title">Perdita forestale per regione</h3>
+      <p class="chart-source">Fonte: Global Forest Watch, 2023</p>
+      <div class="chart-wrapper">
+        <canvas id="regionChart"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: IMMAGINI SATELLITARI NASA -->
+<section class="satellite-section" id="satellite">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-tag">NASA Earthdata · MODIS/Landsat</span>
+      <h2 class="section-title">Lo vediamo dallo spazio</h2>
+      <p class="section-intro">
+        Immagini satellitari reali acquisite dal satellite MODIS della NASA sullo stato di Rondônia (Brasile occidentale),
+        una delle zone più deforestate dell'Amazzonia. Ogni immagine mostra la stessa area in anni diversi.
+      </p>
+    </div>
+
+    <!-- SLIDER TIMELINE 2000-2012 -->
+    <div class="sat-slider-wrapper fade-in">
+      <div class="sat-year-display">
+        <span class="sat-year-label">Anno</span>
+        <span class="sat-year-num" id="satYear">2000</span>
+      </div>
+      <div class="sat-image-container">
+        <img id="satImg" src="https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20000730.jpg"
+             alt="Amazzonia - Rondônia 2000 (NASA MODIS)" loading="lazy" />
+        <div class="sat-badge">NASA · MODIS</div>
+        <div class="sat-caption" id="satCaption">Stato di Rondônia, Brasile · Luglio 2000 · La foresta è ancora in gran parte intatta</div>
+      </div>
+
+      <div class="sat-controls">
+        <button class="sat-btn" id="satPrev" aria-label="Anno precedente">&#8592;</button>
+        <div class="sat-timeline" id="satTimeline">
+          <!-- generato da JS -->
+        </div>
+        <button class="sat-btn" id="satNext" aria-label="Anno successivo">&#8594;</button>
+      </div>
+
+      <div class="sat-play-row">
+        <button class="sat-play-btn" id="satPlay">&#9654; Riproduci timelapse</button>
+        <span class="sat-source-link">Fonte: <a href="https://earthobservatory.nasa.gov/world-of-change/Deforestation" target="_blank" rel="noopener">NASA Earth Observatory</a></span>
+      </div>
+    </div>
+
+    <!-- BEFORE / AFTER COMPARISON -->
+    <div class="sat-compare-title fade-in">
+      <h3>Confronto: prima e dopo — Ucayali, Perù</h3>
+      <p>La stessa area della foresta amazzonica in Perù fotografata da Landsat nel 2017 e nel 2022 — 5 anni bastano per trasformare foresta in campi.</p>
+    </div>
+    <div class="sat-compare-grid fade-in">
+      <div class="sat-compare-card">
+        <div class="sat-compare-label before-label">PRIMA · 2017</div>
+        <img src="https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/imagerecords/150000/150513/nuevaitalia_oli_2017235.jpg"
+             alt="Ucayali Perù 2017 - NASA Landsat" loading="lazy" />
+        <div class="sat-compare-desc">Agosto 2017 · Landsat OLI · La foresta densa copre ancora quasi tutta l'area intorno alla nuova strada.</div>
+      </div>
+      <div class="sat-compare-card">
+        <div class="sat-compare-label after-label">DOPO · 2022</div>
+        <img src="https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/imagerecords/150000/150513/nuevaitalia_oli_2022233.jpg"
+             alt="Ucayali Perù 2022 - NASA Landsat" loading="lazy" />
+        <div class="sat-compare-desc">Agosto 2022 · Landsat OLI · Stessa area 5 anni dopo: la foresta è quasi completamente scomparsa, sostituita da campi e pascoli.</div>
+      </div>
+    </div>
+    <!-- CONFRONTO AGGIUNTIVO: Rondônia 2000 vs 2024 -->
+    <div class="sat-compare-title fade-in" style="margin-top:1rem;">
+      <h3>24 anni di devastazione — Rondônia, Brasile</h3>
+      <p>Confronto 2000–2024 sulla stessa area: a sinistra la foresta intatta, a destra la situazione attuale con incendi e disboscamento.</p>
+    </div>
+    <div class="sat-compare-grid fade-in">
+      <div class="sat-compare-card">
+        <div class="sat-compare-label before-label">PRIMA · 2000</div>
+        <img src="https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20000730.jpg"
+             alt="Rondônia 2000 NASA MODIS" loading="lazy" />
+        <div class="sat-compare-desc">Luglio 2000 · NASA MODIS · La foresta tropicale copre quasi tutta la regione di Rondônia.</div>
+      </div>
+      <div class="sat-compare-card">
+        <div class="sat-compare-label after-label">DOPO · 2024</div>
+        <img src="https://assets.science.nasa.gov/content/dam/science/esd/eo/images/imagerecords/153000/153175/amazon_deforestation_amo_20240804_lrg.jpg"
+             alt="Amazzonia agosto 2024 NASA MODIS" loading="lazy" />
+        <div class="sat-compare-desc">Agosto 2024 · NASA MODIS Terra · Incendi devastanti e deforestazione avanzata — il fumo copre migliaia di km² dell'Amazzonia brasiliana.</div>
+      </div>
+    </div>
+
+    <!-- MAPPA PERDITA FORESTALE -->
+    <div class="sat-map-wrapper fade-in">
+      <h3>Mappa della perdita forestale 2000–2018 (Landsat)</h3>
+      <p>Ogni punto rosso rappresenta un'area deforestata rilevata da Landsat. L'intensità mostra la concentrazione della perdita.</p>
+      <img src="https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/imagerecords/145000/145988/map_145988.png"
+           alt="Mappa perdita forestale Amazzonia 2000-2018 - NASA Landsat" loading="lazy" class="sat-map-img" />
+      <div class="sat-map-caption">Fonte: NASA Earth Observatory · Hansen/UMD/Google/USGS/NASA · Immagini Landsat</div>
+    </div>
+
+    <!-- MAPPA EVI (VEGETAZIONE) -->
+    <div class="sat-evi-wrapper fade-in">
+      <h3>Indice di Vegetazione Potenziato (EVI) · MODIS</h3>
+      <p>Misura la densità e la salute della copertura vegetale. Il verde scuro indica foresta densa, il giallo/marrone indica degrado o assenza di foresta.</p>
+      <img src="https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_evi.jpg"
+           alt="EVI vegetation index Amazon deforestation - NASA MODIS" loading="lazy" class="sat-map-img" />
+      <div class="sat-map-caption">Fonte: NASA Earth Observatory · Enhanced Vegetation Index · Dati MODIS Terra</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION 3: CAUSE -->
+<section class="causes-section" id="causes">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-tag">Le origini</span>
+      <h2 class="section-title">Le cause della deforestazione</h2>
+      <p class="section-intro">
+        Le ragioni della distruzione delle foreste sono molteplici e interconnesse, spesso guidate da interessi economici globali.
+      </p>
+    </div>
+
+    <div class="causes-grid">
+      <div class="cause-column fade-in">
+        <h3>Cause Dirette</h3>
+        <ul class="cause-list">
+          <li>
+            <span class="cause-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2 L4 12 L12 22 L20 12 Z M12 6 L16 12 L12 18 L8 12 Z"/></svg>
+            </span>
+            <span class="cause-text">
+              <strong>Agricoltura intensiva</strong>
+              <span>Espansione di soia, olio di palma e pascoli per bestiame</span>
+            </span>
+          </li>
+          <li>
+            <span class="cause-icon">
+              <svg viewBox="0 0 24 24"><path d="M3 21 L21 21 L21 19 L3 19 Z M6 17 L18 17 L18 5 L12 2 L6 5 Z"/></svg>
+            </span>
+            <span class="cause-text">
+              <strong>Disboscamento industriale</strong>
+              <span>Estrazione di legname per costruzione, mobili e carta</span>
+            </span>
+          </li>
+          <li>
+            <span class="cause-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2 C8 6 6 10 6 14 a6 6 0 0 0 12 0 c0-4-2-8-6-12 Z"/></svg>
+            </span>
+            <span class="cause-text">
+              <strong>Incendi boschivi</strong>
+              <span>Spesso provocati per liberare terreni o per dolo</span>
+            </span>
+          </li>
+          <li>
+            <span class="cause-icon">
+              <svg viewBox="0 0 24 24"><path d="M3 18 L21 18 L21 16 L3 16 Z M3 14 L21 14 L21 12 L3 12 Z M3 10 L21 10 L21 8 L3 8 Z"/></svg>
+            </span>
+            <span class="cause-text">
+              <strong>Infrastrutture e miniere</strong>
+              <span>Strade, dighe, attività estrattive che frammentano il territorio</span>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="cause-column fade-in">
+        <h3>Cause Indirette</h3>
+        <ul class="cause-list">
+          <li>
+            <span class="cause-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="white" stroke-width="2"/><path d="M3 12 H21 M12 3 C16 7 16 17 12 21 C8 17 8 7 12 3" fill="none" stroke="white" stroke-width="2"/></svg>
+            </span>
+            <span class="cause-text">
+              <strong>Domanda globale</strong>
+              <span>Pressione dei mercati internazionali sulle materie prime agricole</span>
+            </span>
+          </li>
+          <li>
+            <span class="cause-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2 L2 22 L22 22 Z M12 8 L18 20 L6 20 Z"/></svg>
+            </span>
+            <span class="cause-text">
+              <strong>Crescita demografica</strong>
+              <span>Aumento della popolazione e maggiore richiesta di cibo e terre</span>
+            </span>
+          </li>
+          <li>
+            <span class="cause-icon">
+              <svg viewBox="0 0 24 24"><path d="M4 4 H20 V20 H4 Z M8 8 H16 V16 H8 Z" fill="none" stroke="white" stroke-width="2"/></svg>
+            </span>
+            <span class="cause-text">
+              <strong>Politiche deboli</strong>
+              <span>Mancanza di controlli, corruzione e leggi non applicate</span>
+            </span>
+          </li>
+          <li>
+            <span class="cause-icon">
+              <svg viewBox="0 0 24 24"><path d="M3 12 L9 12 L9 18 L15 12 L21 12 L15 6 L9 12 Z"/></svg>
+            </span>
+            <span class="cause-text">
+              <strong>Cambiamento climatico</strong>
+              <span>Siccità prolungate che amplificano gli incendi forestali</span>
+            </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="chart-container fade-in">
+      <h3 class="chart-title">Cause della deforestazione per settore</h3>
+      <p class="chart-source">Fonte: WWF / FAO, 2022</p>
+      <div class="chart-wrapper">
+        <canvas id="causesChart"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: CONSEGUENZE -->
+<section class="consequences-section" id="consequences">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-tag">L'impatto</span>
+      <h2 class="section-title">Le conseguenze</h2>
+      <p class="section-intro">
+        La perdita delle foreste innesca una reazione a catena che colpisce ogni aspetto del sistema Terra: dal clima alla biodiversità, fino alle vite di miliardi di persone.
+      </p>
+    </div>
+
+    <div class="consequences-grid">
+      <div class="consequence-card climate fade-in">
+        <div class="consequence-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 3 L13.5 8.5 L19 9 L14.5 12.5 L16 18 L12 15 L8 18 L9.5 12.5 L5 9 L10.5 8.5 Z"/></svg>
+        </div>
+        <h3>CLIMA</h3>
+        <ul>
+          <li>Le foreste assorbono circa <strong>2,6 Gt di CO&#8322; all'anno</strong></li>
+          <li>La deforestazione causa il <strong>10% delle emissioni globali</strong></li>
+          <li>Alterazione del <strong>ciclo idrologico</strong> e delle precipitazioni</li>
+          <li>Riduzione dell'effetto raffrescamento naturale</li>
+        </ul>
+      </div>
+
+      <div class="consequence-card biodiversity fade-in">
+        <div class="consequence-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2 C8 6 6 12 6 16 C6 18 8 20 12 20 C16 20 18 18 18 16 C18 12 16 6 12 2 Z M10 10 a1 1 0 0 1 0 2 a1 1 0 0 1 0-2 M14 10 a1 1 0 0 1 0 2 a1 1 0 0 1 0-2"/></svg>
+        </div>
+        <h3>BIODIVERSITÀ</h3>
+        <ul>
+          <li>Il <strong>70% delle specie terrestri</strong> vive nelle foreste tropicali</li>
+          <li>Circa <strong>137 specie estinte ogni giorno</strong> per perdita di habitat</li>
+          <li>Frammentazione e isolamento delle popolazioni animali</li>
+          <li>Distruzione di reti ecologiche millenarie</li>
+        </ul>
+      </div>
+
+      <div class="consequence-card community fade-in">
+        <div class="consequence-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 4 a3 3 0 0 1 3 3 a3 3 0 0 1 -6 0 a3 3 0 0 1 3-3 Z M6 20 c0-3 2.7-5 6-5 c3.3 0 6 2 6 5 v1 H6 Z"/></svg>
+        </div>
+        <h3>COMUNITÀ UMANE</h3>
+        <ul>
+          <li><strong>1,6 miliardi di persone</strong> dipendono direttamente dalle foreste</li>
+          <li>Minaccia per <strong>popolazioni indigene</strong> e culture millenarie</li>
+          <li>Aumento del rischio di <strong>zoonosi</strong> e nuove pandemie</li>
+          <li>Conflitti per il controllo del suolo e delle risorse</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="chart-container fade-in">
+      <h3 class="chart-title">Emissioni di CO&#8322; per settore</h3>
+      <p class="chart-source">Fonte: IPCC / IEA, 2022</p>
+      <div class="chart-wrapper">
+        <canvas id="emissionsChart"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5: SOLUZIONI -->
+<section class="solutions-section" id="solutions">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-tag">Il cambiamento</span>
+      <h2 class="section-title">Le soluzioni possibili</h2>
+      <p class="section-intro">
+        Una risposta efficace alla deforestazione richiede azione su tre livelli interconnessi: globale, nazionale e individuale.
+      </p>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item fade-in">
+        <h3>Politiche internazionali</h3>
+        <div class="timeline-content">
+          <p>L'<strong>Accordo di Parigi (2015)</strong> ha incluso le foreste come elemento chiave nella lotta al cambiamento climatico. Il programma <strong>REDD+</strong> dell'ONU compensa i Paesi che proteggono le proprie aree forestali.</p>
+          <p>La <strong>Moratoria sulla Soia in Brasile</strong>, attiva dal 2006, ha ridotto la deforestazione legata alla soia di oltre il <span class="highlight-stat">-70%</span> in Amazzonia.</p>
+          <p>Il <strong>Regolamento UE sulla deforestazione (EUDR)</strong>, in vigore dal 2024, impone tracciabilità su prodotti come caffè, cacao, soia e legno.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item fade-in">
+        <h3>Azioni nazionali e locali</h3>
+        <div class="timeline-content">
+          <p>La <strong>Costa Rica</strong> è un caso esemplare di rigenerazione forestale: dal <span class="highlight-stat">21%</span> di copertura nel 1987 al <span class="highlight-stat">54%</span> attuale, grazie a politiche di pagamento per servizi ecosistemici.</p>
+          <p>La certificazione <strong>FSC (Forest Stewardship Council)</strong> garantisce che il legname provenga da foreste gestite in modo sostenibile.</p>
+          <p>Il sistema satellitare <strong>DETER</strong> in Brasile monitora la deforestazione in tempo reale, permettendo interventi rapidi delle autorità.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item fade-in">
+        <h3>Azioni individuali</h3>
+        <div class="timeline-content">
+          <p>Ridurre il consumo di <strong>carne</strong>, in particolare bovina, diminuisce la domanda di pascoli e mangimi a base di soia.</p>
+          <p>Verificare la presenza di <strong>olio di palma sostenibile</strong> (RSPO) nei prodotti acquistati e preferire alternative.</p>
+          <p>Scegliere <strong>carta e legno certificati FSC</strong> o riciclati per arredamento, libri e imballaggi.</p>
+          <p>Sostenere <strong>ONG ambientaliste</strong> (WWF, Greenpeace, Rainforest Alliance) e partecipare attivamente alla riforestazione.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-container fade-in">
+      <h3 class="chart-title">Costa Rica: il recupero forestale</h3>
+      <p class="chart-source">Fonte: SINAC / FAO Forest Resources Assessment, 2021</p>
+      <div class="chart-wrapper">
+        <canvas id="costaRicaChart"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6: CONCLUSIONI -->
+<section class="conclusions-section" id="conclusions">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-tag">Riflessioni</span>
+      <h2 class="section-title">Conclusioni</h2>
+      <p class="section-intro">
+        La deforestazione non è un problema lontano: ci riguarda tutti, ogni giorno, in ogni nostra scelta. Ma non siamo impotenti.
+      </p>
+    </div>
+
+    <div class="conclusions-grid">
+      <div class="conclusion-card fade-in">
+        <div class="conclusion-number">01</div>
+        <h3>Urgenza Globale</h3>
+        <p>Le foreste sono i <strong>polmoni verdi della Terra</strong>: la loro perdita compromette il clima, la biodiversità e la vita di miliardi di persone. Agire ora è una necessità, non un'opzione.</p>
+      </div>
+
+      <div class="conclusion-card fade-in">
+        <div class="conclusion-number">02</div>
+        <h3>Soluzioni Esistono</h3>
+        <p>Casi come la <strong>Costa Rica</strong> e la moratoria sulla soia dimostrano che il recupero è possibile. Servono volontà politica, controlli rigorosi e cooperazione tra Stati, imprese e cittadini.</p>
+      </div>
+
+      <div class="conclusion-card fade-in">
+        <div class="conclusion-number">03</div>
+        <h3>Responsabilità Condivisa</h3>
+        <p>Ogni scelta quotidiana, dalle abitudini alimentari ai prodotti che acquistiamo, contribuisce a salvare o distruggere le foreste. <strong>Il cambiamento parte da ognuno di noi</strong>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-container">
+    <h3 class="footer-title">Fonti e riferimenti</h3>
+    <ul class="footer-sources">
+      <li><strong>FAO</strong> &mdash; Global Forest Resources Assessment, 2020-2023</li>
+      <li><strong>Global Forest Watch</strong> &mdash; Tree cover loss data, 2023</li>
+      <li><strong>WWF</strong> &mdash; Living Forests Report</li>
+      <li><strong>IPCC</strong> &mdash; AR6 Climate Change Report, 2022</li>
+      <li><strong>IEA</strong> &mdash; CO&#8322; Emissions in 2022</li>
+      <li><strong>UN-REDD Programme</strong> &mdash; Annual Reports</li>
+      <li><strong>SINAC Costa Rica</strong> &mdash; Forest Cover Statistics</li>
+      <li><strong>Greenpeace</strong> &mdash; Soy Moratorium Report</li>
+      <li><strong>Rainforest Alliance</strong> &mdash; Forest Restoration</li>
+      <li><strong>Mongabay</strong> &mdash; Tropical forest analysis</li>
+      <li><strong>UE</strong> &mdash; Regolamento (UE) 2023/1115 sulla deforestazione</li>
+      <li><strong>FSC International</strong> &mdash; Certification standards</li>
+    </ul>
+    <div class="footer-bottom">
+      Progetto realizzato da <strong>Alessandro Zavarise</strong>, <strong>Ersi Arapaji</strong>, <strong>Enrico Bozzolin</strong> &middot; Anno scolastico 2024&ndash;25
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ===== SATELLITE SLIDER ===== */
+  const satData = [
+    { year: 2000, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20000730.jpg', caption: 'Stato di Rondônia, Brasile · Luglio 2000 · La foresta è ancora in gran parte intatta' },
+    { year: 2001, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20010811.jpg', caption: 'Agosto 2001 · Si iniziano a vedere le prime zone disboscate ai margini delle strade' },
+    { year: 2002, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20020711.jpg', caption: 'Luglio 2002 · La deforestazione avanza seguendo le strade principali (pattern a "lisca di pesce")' },
+    { year: 2003, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20030721.jpg', caption: 'Luglio 2003 · Picco di deforestazione: circa 25.000 km² persi solo in questo anno in Brasile' },
+    { year: 2004, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20040801.jpg', caption: 'Agosto 2004 · Anno con il maggiore tasso di deforestazione dell\'intero periodo: 27.000 km²' },
+    { year: 2005, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20050710.jpg', caption: 'Luglio 2005 · Dopo le politiche brasiliane, il ritmo inizia a rallentare leggermente' },
+    { year: 2006, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20060717.jpg', caption: 'Luglio 2006 · Entra in vigore la Moratoria sulla Soia: i produttori si impegnano a non disboscare' },
+    { year: 2007, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20070812.jpg', caption: 'Agosto 2007 · La perdita forestale si riduce del 30% rispetto al picco del 2004' },
+    { year: 2008, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20080729.jpg', caption: 'Luglio 2008 · Il Brasile intensifica i controlli con la mappatura satellitare DETER' },
+    { year: 2009, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20090821.jpg', caption: 'Agosto 2009 · La crisi economica mondiale rallenta temporaneamente l\'espansione agricola' },
+    { year: 2010, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20100802.jpg', caption: 'Agosto 2010 · Approvato il nuovo Codice Forestale brasiliano, aumenta la superficie protetta' },
+    { year: 2011, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20110805.jpg', caption: 'Agosto 2011 · La deforestazione è scesa all\'80% in meno rispetto al picco del 2004' },
+    { year: 2012, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/woc/images/amazon/amazon_deforestation_20120718.jpg', caption: 'Luglio 2012 · In 12 anni enormi aree verdi sono diventate terreni agricoli e pascoli — il confronto è impressionante' },
+    { year: 2017, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/imagerecords/150000/150513/nuevaitalia_oli_2017235.jpg', caption: 'Agosto 2017 · Ucayali, Perù (Landsat OLI) · La deforestazione segue una nuova strada tagliata nella foresta — il classico pattern "a lisca di pesce" si espande rapidamente', location: 'Ucayali, Perù' },
+    { year: 2022, url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/esd/eo/images/imagerecords/150000/150513/nuevaitalia_oli_2022233.jpg', caption: 'Agosto 2022 · Ucayali, Perù (Landsat OLI) · Stessa area 5 anni dopo: la foresta è quasi completamente sparita, sostituita da campi agricoli e pascoli per il bestiame', location: 'Ucayali, Perù' },
+    { year: 2024, url: 'https://assets.science.nasa.gov/content/dam/science/esd/eo/images/imagerecords/153000/153175/amazon_deforestation_amo_20240804_lrg.jpg', caption: 'Agosto 2024 · Amazzonia brasiliana (MODIS Terra) · Incendi e disboscamenti lungo la "frontiera della deforestazione" negli stati di Amazonas e Pará — il fumo copre migliaia di km²', location: 'Amazonas/Pará, Brasile' }
+  ];
+
+  let satIndex = 0;
+  let satPlayInterval = null;
+
+  const satImg = document.getElementById('satImg');
+  const satYear = document.getElementById('satYear');
+  const satCaption = document.getElementById('satCaption');
+  const satTimeline = document.getElementById('satTimeline');
+  const satPrev = document.getElementById('satPrev');
+  const satNext = document.getElementById('satNext');
+  const satPlay = document.getElementById('satPlay');
+
+  function buildSatTimeline() {
+    satData.forEach((d, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'sat-dot' + (i === 0 ? ' active' : '');
+      dot.textContent = String(d.year).slice(2);
+      dot.title = d.year + (d.location ? ' · ' + d.location : ' · Rondônia, Brasile');
+      dot.addEventListener('click', () => setSatFrame(i));
+      satTimeline.appendChild(dot);
+    });
+  }
+
+  const satLocBadge = document.getElementById('satLocBadge') || (() => {
+    const b = document.createElement('div');
+    b.id = 'satLocBadge';
+    b.style.cssText = 'position:absolute;top:1rem;left:1rem;background:rgba(0,0,0,0.75);color:#e9c46a;font-size:0.72rem;font-weight:700;letter-spacing:1px;padding:0.35rem 0.8rem;border-radius:20px;border:1px solid rgba(233,196,106,0.4);backdrop-filter:blur(8px);transition:opacity 0.3s';
+    document.querySelector('.sat-image-container').appendChild(b);
+    return b;
+  })();
+
+  function setSatFrame(i) {
+    satIndex = i;
+    const d = satData[i];
+    satImg.classList.add('loading');
+    const tmp = new Image();
+    tmp.onload = () => {
+      satImg.src = d.url;
+      satImg.alt = 'Amazzonia ' + d.year + ' (NASA)';
+      satImg.classList.remove('loading');
+    };
+    tmp.onerror = () => { satImg.classList.remove('loading'); };
+    tmp.src = d.url;
+    satYear.textContent = d.year;
+    satCaption.textContent = d.caption;
+    satLocBadge.textContent = d.location || 'Rondônia, Brasile';
+    document.querySelectorAll('.sat-dot').forEach((dot, idx) => {
+      dot.classList.toggle('active', idx === i);
+    });
+  }
+
+  satPrev.addEventListener('click', () => {
+    setSatFrame((satIndex - 1 + satData.length) % satData.length);
+  });
+  satNext.addEventListener('click', () => {
+    setSatFrame((satIndex + 1) % satData.length);
+  });
+
+  satPlay.addEventListener('click', () => {
+    if (satPlayInterval) {
+      clearInterval(satPlayInterval);
+      satPlayInterval = null;
+      satPlay.textContent = '▶ Riproduci timelapse';
+      satPlay.classList.remove('playing');
+    } else {
+      satPlay.textContent = '⏹ Stop';
+      satPlay.classList.add('playing');
+      satPlayInterval = setInterval(() => {
+        const next = (satIndex + 1) % satData.length;
+        setSatFrame(next);
+        if (next === 0) {
+          clearInterval(satPlayInterval);
+          satPlayInterval = null;
+          satPlay.textContent = '▶ Riproduci timelapse';
+          satPlay.classList.remove('playing');
+        }
+      }, 1200);
+    }
+  });
+
+  buildSatTimeline();
+
+  /* ===== NAVBAR SCROLL EFFECT ===== */
+  const navbar = document.getElementById('navbar');
+  const progressBar = document.getElementById('progressBar');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const sections = document.querySelectorAll('section');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+
+    // Progress bar
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+    progressBar.style.width = scrolled + '%';
+
+    // Active nav link
+    let current = '';
+    sections.forEach(section => {
+      const top = section.offsetTop - 100;
+      if (scrollTop >= top) current = section.id;
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  });
+
+  /* ===== MOBILE MENU ===== */
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinksEl = document.getElementById('navLinks');
+  menuToggle.addEventListener('click', () => {
+    navLinksEl.classList.toggle('open');
+  });
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      navLinksEl.classList.remove('open');
+    });
+  });
+
+  /* ===== INTERSECTION OBSERVER for FADE-IN ===== */
+  const observerOptions = {
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px'
+  };
+  const fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, observerOptions);
+  document.querySelectorAll('.fade-in, .timeline-item').forEach(el => fadeObserver.observe(el));
+
+  /* ===== COUNTER ANIMATION ===== */
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const cards = document.querySelectorAll('.stat-card');
+        cards.forEach(c => c.classList.add('visible'));
+
+        const counters = document.querySelectorAll('[data-counter]');
+        counters.forEach(counter => {
+          if (counter.dataset.animated) return;
+          counter.dataset.animated = 'true';
+          const target = parseFloat(counter.dataset.counter);
+          const suffix = counter.dataset.suffix || '';
+          const duration = 2200;
+          const startTime = performance.now();
+
+          function update(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const value = target * eased;
+            const display = Number.isInteger(target) ? Math.floor(value) : value.toFixed(1);
+            counter.textContent = display + suffix;
+            if (progress < 1) requestAnimationFrame(update);
+            else counter.textContent = target + suffix;
+          }
+          requestAnimationFrame(update);
+        });
+        counterObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  const heroEl = document.querySelector('.hero');
+  if (heroEl) counterObserver.observe(heroEl);
+
+  /* ===== CANVAS: FALLING LEAVES ===== */
+  const canvas = document.getElementById('leaves-canvas');
+  const ctx = canvas.getContext('2d');
+  let leaves = [];
+  let animationId;
+
+  function resizeCanvas() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  class Leaf {
+    constructor() {
+      this.reset();
+      this.y = Math.random() * canvas.height;
+    }
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = -20;
+      this.size = Math.random() * 8 + 6;
+      this.speedY = Math.random() * 0.8 + 0.4;
+      this.speedX = (Math.random() - 0.5) * 0.7;
+      this.angle = Math.random() * Math.PI * 2;
+      this.angleSpeed = (Math.random() - 0.5) * 0.03;
+      this.opacity = Math.random() * 0.5 + 0.15;
+      const palette = ['#52b788', '#2d6a4f', '#74c69d', '#95d5b2', '#e9c46a'];
+      this.color = palette[Math.floor(Math.random() * palette.length)];
+    }
+    update() {
+      this.y += this.speedY;
+      this.x += this.speedX + Math.sin(this.angle) * 0.5;
+      this.angle += this.angleSpeed;
+      if (this.y > canvas.height + 20) this.reset();
+    }
+    draw() {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.angle);
+      ctx.globalAlpha = this.opacity;
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, this.size * 0.5, this.size, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(13, 27, 15, 0.4)';
+      ctx.lineWidth = 0.7;
+      ctx.beginPath();
+      ctx.moveTo(0, -this.size);
+      ctx.lineTo(0, this.size);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  for (let i = 0; i < 50; i++) leaves.push(new Leaf());
+
+  function animateLeaves() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    leaves.forEach(leaf => {
+      leaf.update();
+      leaf.draw();
+    });
+    animationId = requestAnimationFrame(animateLeaves);
+  }
+  animateLeaves();
+
+  /* ===== CHART.JS GLOBAL CONFIG ===== */
+  Chart.defaults.color = '#c8d8c9';
+  Chart.defaults.font.family = "'Inter', sans-serif";
+  Chart.defaults.font.size = 13;
+  Chart.defaults.borderColor = 'rgba(82, 183, 136, 0.15)';
+
+  const gradientColors = {
+    green: 'rgba(82, 183, 136, 0.85)',
+    greenDark: 'rgba(45, 106, 79, 0.85)',
+    amber: 'rgba(233, 196, 106, 0.85)',
+    red: 'rgba(230, 57, 70, 0.85)',
+    purple: 'rgba(157, 78, 221, 0.85)',
+    blue: 'rgba(81, 152, 197, 0.85)'
+  };
+
+  /* ===== CHART 1: REGION (Horizontal Bar) ===== */
+  function initRegionChart() {
+    const ctx1 = document.getElementById('regionChart').getContext('2d');
+    new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: ['Amazzonia (Brasile)', 'Africa centrale (Congo)', 'Asia sud-orientale', 'America Centrale', 'Altre regioni'],
+        datasets: [{
+          label: 'Perdita forestale (%)',
+          data: [34, 22, 20, 14, 10],
+          backgroundColor: [
+            gradientColors.red,
+            gradientColors.amber,
+            gradientColors.green,
+            gradientColors.greenDark,
+            gradientColors.purple
+          ],
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          borderWidth: 1,
+          borderRadius: 8,
+          barThickness: 30
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(13, 27, 15, 0.95)',
+            borderColor: '#52b788',
+            borderWidth: 1,
+            titleColor: '#e9c46a',
+            padding: 12,
+            callbacks: {
+              label: ctx => ' ' + ctx.parsed.x + '% della perdita totale'
+            }
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            max: 40,
+            grid: { color: 'rgba(82, 183, 136, 0.1)' },
+            ticks: { callback: v => v + '%' }
+          },
+          y: { grid: { display: false } }
+        },
+        animation: { duration: 1800, easing: 'easeOutQuart' }
+      }
+    });
+  }
+
+  /* ===== CHART 2: CAUSES (Doughnut) ===== */
+  function initCausesChart() {
+    const ctx2 = document.getElementById('causesChart').getContext('2d');
+    new Chart(ctx2, {
+      type: 'doughnut',
+      data: {
+        labels: ['Agricoltura (soia, palma, bestiame)', 'Estrazione di legname', 'Infrastrutture e miniere', 'Altro / cause miste'],
+        datasets: [{
+          data: [73, 14, 8, 5],
+          backgroundColor: [
+            gradientColors.red,
+            gradientColors.amber,
+            gradientColors.green,
+            gradientColors.purple
+          ],
+          borderColor: '#0d1b0f',
+          borderWidth: 3,
+          hoverOffset: 18
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              padding: 18,
+              font: { size: 13 },
+              usePointStyle: true,
+              pointStyle: 'circle'
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(13, 27, 15, 0.95)',
+            borderColor: '#52b788',
+            borderWidth: 1,
+            titleColor: '#e9c46a',
+            padding: 12,
+            callbacks: {
+              label: ctx => ' ' + ctx.label + ': ' + ctx.parsed + '%'
+            }
+          }
+        },
+        animation: { animateRotate: true, animateScale: true, duration: 1800 }
+      }
+    });
+  }
+
+  /* ===== CHART 3: EMISSIONS (Vertical Bar) ===== */
+  function initEmissionsChart() {
+    const ctx3 = document.getElementById('emissionsChart').getContext('2d');
+    new Chart(ctx3, {
+      type: 'bar',
+      data: {
+        labels: ['Deforestazione', 'Trasporti', 'Industria', 'Energia', 'Altro'],
+        datasets: [{
+          label: 'Emissioni CO₂ (%)',
+          data: [10, 16, 19, 34, 21],
+          backgroundColor: [
+            gradientColors.red,
+            gradientColors.amber,
+            gradientColors.purple,
+            gradientColors.green,
+            gradientColors.greenDark
+          ],
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          borderWidth: 1,
+          borderRadius: 10,
+          barThickness: 55
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(13, 27, 15, 0.95)',
+            borderColor: '#52b788',
+            borderWidth: 1,
+            titleColor: '#e9c46a',
+            padding: 12,
+            callbacks: {
+              label: ctx => ' ' + ctx.parsed.y + '% delle emissioni globali'
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false } },
+          y: {
+            beginAtZero: true,
+            max: 40,
+            grid: { color: 'rgba(82, 183, 136, 0.1)' },
+            ticks: { callback: v => v + '%' }
+          }
+        },
+        animation: { duration: 1800, easing: 'easeOutQuart' }
+      }
+    });
+  }
+
+  /* ===== CHART 4: COSTA RICA (Line) ===== */
+  function initCostaRicaChart() {
+    const ctx4 = document.getElementById('costaRicaChart').getContext('2d');
+    const gradient = ctx4.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(82, 183, 136, 0.6)');
+    gradient.addColorStop(1, 'rgba(82, 183, 136, 0.02)');
+
+    new Chart(ctx4, {
+      type: 'line',
+      data: {
+        labels: ['1987', '2000', '2010', '2021'],
+        datasets: [{
+          label: 'Copertura forestale (%)',
+          data: [21, 31, 42, 54],
+          borderColor: '#52b788',
+          backgroundColor: gradient,
+          borderWidth: 4,
+          fill: true,
+          tension: 0.45,
+          pointBackgroundColor: '#e9c46a',
+          pointBorderColor: '#0d1b0f',
+          pointBorderWidth: 3,
+          pointRadius: 8,
+          pointHoverRadius: 12,
+          pointHoverBackgroundColor: '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { padding: 18, usePointStyle: true, pointStyle: 'circle' }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(13, 27, 15, 0.95)',
+            borderColor: '#52b788',
+            borderWidth: 1,
+            titleColor: '#e9c46a',
+            padding: 12,
+            callbacks: {
+              label: ctx => ' Copertura: ' + ctx.parsed.y + '%'
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: 'rgba(82, 183, 136, 0.1)' } },
+          y: {
+            beginAtZero: true,
+            max: 60,
+            grid: { color: 'rgba(82, 183, 136, 0.1)' },
+            ticks: { callback: v => v + '%' }
+          }
+        },
+        animation: { duration: 2000, easing: 'easeOutQuart' }
+      }
+    });
+  }
+
+  /* ===== LAZY-LOAD CHARTS via IntersectionObserver ===== */
+  const chartInitializers = {
+    regionChart: initRegionChart,
+    causesChart: initCausesChart,
+    emissionsChart: initEmissionsChart,
+    costaRicaChart: initCostaRicaChart
+  };
+  const initialized = {};
+  const chartObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        if (chartInitializers[id] && !initialized[id]) {
+          chartInitializers[id]();
+          initialized[id] = true;
+          chartObserver.unobserve(entry.target);
+        }
+      }
+    });
+  }, { threshold: 0.2 });
+
+  Object.keys(chartInitializers).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) chartObserver.observe(el);
+  });
+
+  /* ===== SMOOTH SCROLL FALLBACK ===== */
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
